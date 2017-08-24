@@ -32,14 +32,17 @@ def join(NodeID,NodeID_old):
 	new_node = node.Node(NodeID)
 	new_node.join(node_joined)
 	nodes.append(new_node)
-	# rings[0].nodes.append(new_node)
+	rings[0].nodes.append(new_node)
 	return infor_nodes(new_node.NodeID)
 
 def remove(NodeID):
 	node=None
 	for i in nodes:
 		if NodeID== i.NodeID:
-			node=i
+			if i.status==True:
+				node=i
+			else:
+				return "Node remove bi loi!!!"
 			break
 	if node is None:
 		print 'khong ton tai node co NodeID la: ', NodeID
@@ -56,11 +59,15 @@ def lookup(NodeID,keyID=None,data=None):
 	node_joined=None
 	for node in nodes:
 		if NodeID==node.NodeID:
-			node_joined= node
+			if node.status==True:
+				node_joined = node
+			else:
+				print "Node lookup bi loi!!!"
+				return False
 			break
 	if node_joined is None:
 		kq= 'khong co Node nao co ID: ' +  str(NodeID)
-		return kq
+		return False
 	if keyID is None:
 		keyID=hashkey.hashkey(data)
 	return node_joined.lookup(keyID,duongdi)
@@ -77,7 +84,10 @@ def insert(NodeID,data):
 		print 'khong ton tai node da tham gia co NodeID la: ', NodeID
 		a= 'khong ton tai node da tham gia co NodeID la: ' + str(NodeID)
 		return a
-	return node_old.insert(data,duongdi)
+	elif node_old.status==False:
+		return "Node insert bi loi!!!"
+	else:
+		return node_old.insert(data,duongdi)
 
 def infor_nodes(node_id):
 	if node_id==-1:
@@ -85,7 +95,7 @@ def infor_nodes(node_id):
 		i=0
 		nod=nodes[0]
 		while 1:
-			a= {i:{'NodeID': nod.NodeID,'keyID': nod.keyID,'NodeID sucessor': nod.successor.NodeID,'NodeID predecessor': nod.predecessor.NodeID,'key-value': nod.managekey_value}}
+			a= {i:{'status': nod.status,'NodeID': nod.NodeID,'keyID': nod.keyID,'NodeID sucessor': nod.successor.NodeID,'NodeID predecessor': nod.predecessor.NodeID,'key-value': nod.managekey_value}}
 			list1.append(a)
 			i+=1
 			nod= nod.successor
@@ -97,6 +107,22 @@ def infor_nodes(node_id):
 	print 'khong tim thay node co gia tri NodeID la: ', node_id
 	return 'False'
 	
+def failure(NodeID):
+	node=None
+	for nod in nodes:
+		if nod.NodeID==NodeID:
+			node=nod
+			break
+	if node is None:
+		a= "khong co node nao co NodeID = " + str(NodeID)
+		return a
+
+	if node.status== False:
+		return "hoan thanh"
+	else:
+		node.status=False
+		return "hoan thanh"
+
 
 def save():
 	arr=[]
@@ -131,8 +157,7 @@ def load():
 			rings.append(new_ring)
 			# khoi tao key_value
 			for i in key_value:
-				print i['data']
-				print insert(i['NodeID'],i['data'])
+				insert(i['NodeID'],i['data'])
 			return True
 	else: 
 		print('da ton tai ring')
@@ -142,7 +167,12 @@ def load():
 # moi mot node insert 5 data
 def insert_data():
 	for nod in nodes:
-		for i in range(10):
-			data=random.randint(1,2**20)
-			insert(nod.NodeID,data)
+		# for i in range(2):
+		data=random.randint(1,2**20)
+		insert(nod.NodeID,data)
 	return 'hoan thanh insert'
+
+def reset():
+	rings[:]=[]
+	nodes[:]=[]
+	return 'finished'

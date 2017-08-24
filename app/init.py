@@ -6,6 +6,7 @@ import ring
 import config
 import json
 import finger_table
+import test
 app=Flask(__name__)
 @app.route('/create',methods=['POST'])
 def create():
@@ -33,7 +34,11 @@ def lookupkey():
 		keyID= int(request.form['keyID'])
 		data=None
 		print'----------------------------tien hanh lookup---------------------------'
-		return main.lookup(id_node_joinded,keyID,data)
+		cost= main.lookup(id_node_joinded,keyID,data)
+		if cost==False:
+			return "lookup khong thanh cong"
+		else:
+			return json.dumps({'chi phi: ':cost}, indent=3)
 
 @app.route('/lookupdata',methods=['POST'])
 def lookupdata():
@@ -42,7 +47,11 @@ def lookupdata():
 		data= int(request.form['data'])
 		keyID=None
 		print'----------------------------tien hanh lookup---------------------------'
-		return main.lookup(id_node_joinded,keyID,data)
+		cost= main.lookup(id_node_joinded,keyID,data)
+		if cost==False:
+			return "lookup khong thanh cong"
+		else:
+			return json.dumps({'chi phi: ':cost}, indent=3)
 			
 
 @app.route('/insert', methods=['POST'])
@@ -73,8 +82,6 @@ def infor():
 		else:
 			return main.infor_nodes(node_id)
 
-
-
 @app.route('/save')
 def save():
 	if main.save():
@@ -95,8 +102,27 @@ def load():
 def insert_data():
 	return main.insert_data()
 
+@app.route('/reset')
+def reset():
+	return main.reset()
+
+@app.route('/fault')
+def fault():
+	test.fault()
+	return "hoanh thanh!!!"
+
+@app.route('/test1')
+def test1():
+	return test.test1()
 
 
+@app.route('/failure', methods=['POST'])
+def fauilure():
+	if request.method=='POST':
+		Node= int(request.form['NodeID'])
+		return main.failure(Node)
 
 if __name__=='__main__':
 	app.run(debug=True)
+
+

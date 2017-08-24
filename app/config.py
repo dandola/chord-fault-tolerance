@@ -1,6 +1,5 @@
-NODES= 2**10
+# import math
+NODES= 2**8
+len_nodes=8
 M=160 
 MAX_NODES=2**160
-# NODES=2**3
-# M=5
-# MAX_NODES=2**M
