@@ -34,6 +34,7 @@ def lookupkey():
 		keyID= int(request.form['keyID'])
 		data=None
 		print'----------------------------tien hanh lookup---------------------------'
+		# return main.lookup(id_node_joinded,keyID,data)
 		cost= main.lookup(id_node_joinded,keyID,data)
 		if cost==False:
 			return "lookup khong thanh cong"
@@ -121,6 +122,10 @@ def fauilure():
 	if request.method=='POST':
 		Node= int(request.form['NodeID'])
 		return main.failure(Node)
+
+@app.route('/count_fail_nodes')
+def count_fail_nodes():
+	return main.count_fail_nodes()
 
 if __name__=='__main__':
 	app.run(debug=True)

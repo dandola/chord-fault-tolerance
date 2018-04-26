@@ -10,9 +10,15 @@ class Ring(object):
 		self.Max_Nodes= config.MAX_NODES
 
 
-	def create(self,nodes,list1=[]):
-		if list1 ==[]:
-			list1= random.sample(range(2**15),config.NODES)
+	def create(self,nodes=[]):
+		list1=[]
+		if nodes == []:
+			key=14615016373309029182036848327162830196559325
+			part= int(2**160/config.NODES)
+			list1= range(key, 2**160, part)
+			# list1.append(key)
+		else:
+			list1=nodes
 		for i in range(len(list1)):
 			n= node.Node(list1[i])
 			print("node thu ",i," node-id: ", n.NodeID,'keyID: ',n.keyID)

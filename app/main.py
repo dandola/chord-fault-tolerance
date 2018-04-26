@@ -126,39 +126,49 @@ def failure(NodeID):
 
 def save():
 	arr=[]
+	arr_fail=[]
 	for nod in nodes:
 		if nod.managekey_value:
 			for key_value in nod.managekey_value:
 				data= {'NodeID': nod.NodeID, 'data': key_value['value']}
 				arr.append(data)
+		if nod.status==False:
+			arr_fail.append(nod.NodeID)
+
 
 	data={
 		'id_ring': rings[0].Id_Ring,
 		'Nodes': [x.NodeID for x in nodes],
-		'data': arr
+		'data': arr,
+		'Node_false': arr_fail
 		}
-	with open('data.txt','w') as filedata:
+	with open('data_256.txt','w') as filedata:
 		print data
 		json.dump(data,filedata)
 		return True
 
-def load():
+def load(filedata):
 	if rings ==[]:
-		with open('data.txt','r') as filedata:
-			data=json.load(filedata)
-			print json.dumps(data)
-			# data=json.dumps(data)
-			id_ring=data['id_ring']
-			Nodes= data['Nodes']
-			key_value=data['data']
-			# tao ring
-			new_ring= ring.Ring(id_ring)
-			new_ring.create(nodes,Nodes)
-			rings.append(new_ring)
-			# khoi tao key_value
+		data=filedata
+		# data=json.dumps(data)
+		# print data['id_ring']
+		id_ring = data['id_ring']
+		Nodes= data['Nodes']
+		key_value=data['data']
+		Node_false=data['Node_false']
+		# tao ring
+		new_ring= ring.Ring(id_ring)
+		mean= new_ring.create(Nodes)
+		rings.append(new_ring)
+		print 'chi phi khoi tao ring la: ', mean
+		# khoi tao key_value
+		if key_value!=[]:
 			for i in key_value:
+				# print i['data']
 				insert(i['NodeID'],i['data'])
-			return True
+		for nod in Node_false:
+			failure(nod)
+		return True
 	else: 
 		print('da ton tai ring')
 		return False
@@ -176,3 +186,12 @@ def reset():
 	rings[:]=[]
 	nodes[:]=[]
 	return 'finished'
+
+
+def count_fail_nodes():
+	count=0
+	for node in nodes:
+		if node.status== False:
+			count+=1
+	str= "so luong node fail la: ", count
+	return json.dumps(str, indent=3)
