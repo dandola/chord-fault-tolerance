@@ -1,1 +1,1 @@
-# thuat-toan-chord
+# chord-fault-tolerance
