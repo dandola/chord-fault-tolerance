@@ -7,6 +7,7 @@ import config
 import json
 import finger_table
 import test
+import finger_test
 app=Flask(__name__)
 @app.route('/create',methods=['POST'])
 def create():
@@ -126,6 +127,10 @@ def fauilure():
 @app.route('/count_fail_nodes')
 def count_fail_nodes():
 	return main.count_fail_nodes()
+
+@app.route('/test_finger')
+def test_finger():
+	return finger_test.test_finger()
 
 if __name__=='__main__':
 	app.run(debug=True)

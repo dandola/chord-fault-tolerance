@@ -33,8 +33,9 @@ def test_lookup(keys=[]):
 					fail+=1
 					all_cost.append(int(t))
 				else:
-					list1.append(t)
-					all_cost.append(t)
+					if t!=0:
+						list1.append(t)
+						all_cost.append(t)
 	max_value,min_value=0,0
 	print list1
 	if(len(list1)!=0):					
@@ -58,25 +59,46 @@ def reset_true():
 	return True
 
 
+# def test1():
+# 	keys=[]
+# 	b= "set_4000_keys.txt"
+# 	with open(b,'r') as filedata:
+# 		keys= json.load(filedata)
+# 	a = "set_1024_nodes_ring.txt"
+# 	datas=[]
+# 	with open(a,'r') as filedata:
+# 		datas=json.load(filedata)
+# 	result=[]
+# 	for data in datas:
+# 		main.load(data)
+# 		result_test= test_lookup(keys['keys'])
+# 		result.append(result_test)
+# 		main.reset()
+# 	name = "topo_" + str(config.NODES) + "_nodes_" + str(4000) + "_keys_lookup_with_chord_fault_tolerance.json"
+# 	with open(name,"w") as fw:
+# 		json.dump(result,fw)
+# 	return json.dumps("ket thuc",indent=3)
+
 def test1():
+	arr_num_nodes=[3600,4800]
 	keys=[]
-	b= "set_2000_keys_lookup.txt"
+	b= "set_1000_keys_lookup.txt"
 	with open(b,'r') as filedata:
 		keys= json.load(filedata)
-	a = "set_1024_nodes.txt"
 	datas=[]
-	with open(a,'r') as filedata:
-		datas=json.load(filedata)
-	result=[]
-	for data in datas:
-		main.load(data)
+	for node  in arr_num_nodes:
+		config.NODES = node
+		b="set_"+ str(node) +"_nodes.txt"
+		with open(b,'r') as filedata:
+			datas=json.load(filedata)
+		main.load(datas)
 		result_test= test_lookup(keys['keys'])
-		result.append(result_test)
+		name = "topo_" + str(config.NODES) + "_nodes_" + str(1000) + "_keys_lookup_with_Chord_fault_tolerance.json"
+		with open(name,"w") as fw:
+			json.dump(result_test,fw)
 		main.reset()
-	name = "topo_" + str(config.NODES) + "_nodes_" + str(2000) + "_keys_lookup_with_chord_fault_tolerance.json"
-	with open(name,"w") as fw:
-		json.dump(result,fw)
 	return json.dumps("ket thuc",indent=3)
+
 
 def insert(values=[]):
 	count_request=0
@@ -104,7 +126,7 @@ def test_insert():
 	b= "set_1000_keys.txt"
 	with open(b,'r') as filedata:
 		keys= json.load(filedata)
-	a = "test_1024_nodes.txt"
+	a = "test_4096_nodes.txt"
 	datas=[]
 	with open(a,'r') as filedata:
 		datas= json.load(filedata)
@@ -112,6 +134,7 @@ def test_insert():
 	j=1
 	for data in datas:
 		main.load(data)
+		return json.dumps("ket thuc",indent=3)
 		result_test= insert(keys['keys'])
 		a = str(j)+"nd:the_cost_insertion_1000_data_with_" + str(config.NODES) + "_nodes_chord_fault_tolerance.json"		
 		with open(a,"w") as fw:

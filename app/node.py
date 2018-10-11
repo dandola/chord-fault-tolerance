@@ -23,56 +23,41 @@ class Node(object):
 
 	"""tim kiem successor"""
 	def closest_preceding_node(self,keyID):
-		for i in range(self.m-1,-1,-1):
-			if(distance.distance(self.m,self.keyID,self.finger[i].node.keyID, keyID)):
-				if self.finger[i].node.status==True:
-					return self.finger[i].node
-				else:
-					while self.finger[i-1].node.status==False and i>0:
-						if self.finger[i-1].node.status==False and self.finger[i-1].node.keyID==self.successor.keyID:
-							i=0
-							break
-						i-=1
-					if i==0:
-						for node_success in self.list_successor:
-							if node_success.status==True:
-								if(distance.distance(self.m,self.keyID,node_success.keyID, keyID)):
-									# print 'chuyen sang node co NodeID: ', node_success.NodeID
-									return node_success
-						return False
-					return self.finger[i-1].node
-		return self
+		i = len(self.finger)-1
+		j= len(self.list_successor)-1
+		while i >= 0:
+			if(distance.distance(self.m,self.keyID,self.finger[i].node.keyID, keyID) and self.finger[i].node.status==True):
+				break
+			else:
+				i-=1 
+		while j>=0:
+			if(distance.distance(self.m,self.keyID,self.list_successor[j].keyID, keyID) and self.list_successor[j].status==True):
+				break
+			else:
+				j-=1
+		if(i>=0 and j>=0):
+			if distance.distance(self.m,self.list_successor[j].keyID,self.finger[i].node.keyID,keyID):
+				return self.finger[i].node
+			else:
+				return self.list_successor[j]
+		elif i>=0 and j<0:
+			return self.finger[i].node
+		elif i<0 and j>=0:
+			return self.list_successor[j]
+		else:
+			return self
 
 
 
 	"""tim predecessor cua id"""
 	def find_predecessor(self, keyID,duongdi=[]):
-		node = self
-		success=None
-		if node.successor.status==True:
-			success= node.successor
-		else:
-			for nod in node.list_successor:
-				if nod.status==True:
-					success=nod
-					break
-		if success is None:
-			return False
-
-		while not(distance.distance(self.m,node.keyID,keyID,success.keyID) or keyID == success.keyID):
-			node = node.closest_preceding_node(keyID)
-			if node ==False:
-				return False
-			if node.successor.status==True:
-				success= node.successor
-			else:
-				for nod in node.list_successor:
-					if nod.status==True:
-						success=nod
-						break
-				if success is None:
-					return False
-			# print"node: ", node.NodeID
+		begin,node = self,self
+		# print "keyID: ", keyID
+		while not(distance.distance(node.m,node.keyID,keyID,node.successor.keyID) or keyID == node.successor.keyID):
+			start=node
+			node =node.closest_preceding_node(keyID)
+			if start.keyID == node.keyID:
+				return start
 			duongdi.append(node.NodeID)
 		return node
 
@@ -319,62 +304,25 @@ class Node(object):
 		return True
 
 
-	def lookup(self, keyID,duongdi=[],count=0):
+	def lookup(self, keyID,duongdi=[]):
 		# value= None
 		duongdi.append(self.NodeID)
 		if(distance.distance(self.m,self.predecessor.keyID,keyID,self.keyID) or self.keyID==keyID):
-			for key_value in self.managekey_value:
-				if key_value['key']==keyID:
-					kq={'duongdi':duongdi,'key':key_value['key'],'data': key_value['value'],'thuoc Node': self.NodeID}
-					print json.dumps(kq,indent=3)
-					count=len(duongdi)-1
-					return count
 			kq={'duongdi':duongdi,'key':keyID,'data': None,'thuoc_Node': self.NodeID}
 			# print json.dumps(kq,indent=3)
 			count=len(duongdi)-1
-			# return json.dumps({'duongdi':duongdi,'key':keyID,'data': None,'thuoc_Node': self.NodeID}, indent=3)
 			return count
 		else:
-			node=None 
-			n = self.find_predecessor(keyID,duongdi)
-			# print node
-			if n==False:
-				count = str(len(duongdi)-1)
-				# print "duongdi: ",duongdi
-				return count
-				# return count
-			if n.successor.status==False:
-				for nod in n.list_successor:
-					if nod.status==True:
-						node=nod
-						# print node.NodeID
-						break
+			node = self.find_predecessor(keyID,duongdi)
+			if node.successor.status==True  and (distance.distance(config.M, node.keyID, keyID, node.successor.keyID) or node.successor.keyID==keyID):
+				# print "th1"
+				node = node.successor
 			else:
-				node = n.successor
-				# print 'th2'
-				# print node.NodeID
-				duongdi.append(node.NodeID)
-			if node is None:
-				count = str(len(duongdi)-1)
-				# return count
-				# print "duongdi: ",duongdi
-				return count
-			if(distance.distance(self.m,n.keyID,keyID,node.keyID) or node.keyID==keyID):
-				for key_value in node.managekey_value:
-					if key_value['key']==keyID:
-						# print 'gia tri data la: ', key_value['value']
-						kq={'duongdi':duongdi,'key':key_value['key'],'data': key_value['value'],'thuoc_Node': node.NodeID}
-						count=len(duongdi)-1
-						# print json.dumps(kq,indent=3)
-						return count
-				# print'da tim thay vi tri nhung khong co gia tri voi keyID = ',keyID,' thuoc node: ', node.NodeID
-				kq={'duongdi':duongdi,'key':keyID,'data': None,'thuoc_Node': node.NodeID}
-				# print kq
-				# print json.dumps(kq,indent=3)
-				count=len(duongdi)-1
-				# return json.dumps({'duongdi':duongdi,'key':keyID,'data': None,'thuoc_Node': node.NodeID}, indent=3)
+				count=str(len(duongdi)-1)
+				# print "failure"
 				return count
 			return node.lookup(keyID,duongdi)
+			
 		
 
 
@@ -394,7 +342,7 @@ class Node(object):
 		print '---------------------------finger table-------------------------'
 		print 'index------------------------------start---------------------------------successor-NodeID-----'
 		for fin in self.finger:
-			print fin.index,'--------', fin.start,'------------',fin.node.NodeID
+			print fin.index,'--------', fin.start,'------------',fin.node.keyID
 		print '---------------------------end------------------------------------'
 		a={
 		'status': self.status,

@@ -10,7 +10,7 @@ import json
 import sys
 rings=[]
 nodes=[]
-sys.setrecursionlimit(1500)
+sys.setrecursionlimit(25000)
 def create_ring(ring_id):
 	new_ring= ring.Ring(ring_id)
 	new_ring.create(nodes)
@@ -67,6 +67,7 @@ def lookup(NodeID,keyID=None,data=None):
 			break
 	if node_joined is None:
 		kq= 'khong co Node nao co ID: ' +  str(NodeID)
+		print kq
 		return False
 	if keyID is None:
 		keyID=hashkey.hashkey(data)

@@ -24,10 +24,10 @@ def random_nodes():
 
 def set_of_key():
 	keys=[]
-	part= int(math.ceil((2**160)*1.0/2000))
+	part= int(math.ceil((2**160)*1.0/4000))
 	keys = range(0,2**160,part)
 	print len(keys)
-	b="set_2000_keys.txt"
+	b="set_4000_keys.txt"
 	with open(b,'w') as filedata:
 		json.dump({'keys': keys},filedata)
 		return True
@@ -85,7 +85,6 @@ def read_file():
 	for data in datas:
 		print"max:",data['max'],", min:",data['min'],", mean:",data['mean'],", fails:", data['fails'],", requests:", data['requests'],", successes:",data['successes'],", overall_cost:",data['overall_cost'], ", max_overall_cost:", data['max_overall_cost']
 	
-read_file()
-
+set_of_key()
 
 
