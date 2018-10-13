@@ -313,15 +313,19 @@ class Node(object):
 			count=len(duongdi)-1
 			return count
 		else:
-			node = self.find_predecessor(keyID,duongdi)
-			if node.successor.status==True  and (distance.distance(config.M, node.keyID, keyID, node.successor.keyID) or node.successor.keyID==keyID):
-				# print "th1"
-				node = node.successor
-			else:
-				count=str(len(duongdi)-1)
-				# print "failure"
-				return count
-			return node.lookup(keyID,duongdi)
+			n = self.find_predecessor(keyID,duongdi)
+			for succ in n.list_successor:	
+				if (distance.distance(self.m,n.keyID,keyID,succ.keyID) or succ.keyID==keyID):
+					if succ.status == True:
+						node=succ
+						duongdi.append(node.NodeID)
+						kq={'duongdi':duongdi,'key':keyID,'data': None,'thuoc_Node': node.NodeID}
+						# print json.dumps(kq,indent=3)
+						count=len(duongdi)-1
+						return count
+			count = str(len(duongdi)-1)
+			# print "failure"
+			return count
 			
 		
 
